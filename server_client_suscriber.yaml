@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: servicios-practica
+  name: servicios-practica
+  namespace: practica2-201503958
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: servicios-practica
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: servicios-practica
+      
+    spec:
+      containers:
+      - image: diemorales96/server_grpc_201503958
+        name: server-grpc-rabbit
+        ports:
+          - containerPort: 50051
+      - image: diemorales96/api_client_grpc_201503958
+        name: client-grpc-rabbit
+        ports:
+          - containerPort: 2000
+        resources: {}
+        
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: servicios-practica
+  name: servicios-practica
+  namespace: practica2-201503958
+spec:
+  type: NodePort
+  ports:
+  - port: 2000
+    protocol: TCP
+    targetPort: 2000
+  selector:
+    app: servicios-practica
+  
+status:
+  loadBalancer: {}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: worker-rabbit
+  name: worker-rabbit
+  namespace: practica2-201503958
+spec:
+  selector:
+    matchLabels:
+      app: worker-rabbit
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: worker-rabbit
+    spec:
+      containers:
+      - image: diemorales96/suscriber_201503958
+        name: worker-rabbit
+status: {}
